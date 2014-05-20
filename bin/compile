@@ -23,7 +23,7 @@ CACHED_DIRS=".heroku"
 # Static configurations for virtualenv caches.
 VIRTUALENV_LOC=".heroku/venv"
 LEGACY_TRIGGER="lib/python2.7"
-PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
+PROFILE_PATH="$BUILD_DIR/.profile.d/opencv.sh"
 
 DEFAULT_PYTHON_VERSION="python-2.7.6"
 PYTHON_EXE="/app/.heroku/python/bin/python"
@@ -228,8 +228,8 @@ bpwatch stop collectstatic
 set-env PATH '$HOME/.heroku/bin:$PATH'
 set-env PYTHONUNBUFFERED true
 set-env PYTHONHOME /app/.heroku
-set-default-env LIBRARY_PATH /app/.heroku/lib
-set-default-env LD_LIBRARY_PATH /app/.heroku/lib
+prepend-env LIBRARY_PATH /app/.heroku/lib
+prepend-env LD_LIBRARY_PATH /app/.heroku/lib
 set-default-env LANG en_US.UTF-8
 set-default-env PYTHONHASHSEED random
 set-default-env PYTHONPATH /app/
@@ -260,8 +260,3 @@ bpwatch start anvil_appdir_commit
 
 bpwatch stop anvil_appdir_commit
 bpwatch stop compile
-
-echo "-----> exporting PATH and LD_LIBRARY_PATH"
-mkdir -p "$BUILD_DIR/.profile.d"
-echo "export LD_LIBRARY_PATH=\"\$HOME/.heroku/lib:\$LD_LIBRARY_PATH\"" > $BUILD_DIR/.profile.d/opencv.sh
-echo "export PKG_CONFIG_PATH=\"\$HOME/.heroku/lib/pkgconfig:\$PKG_CONFIG_PATH\"" >> $BUILD_DIR/.profile.d/opencv.sh

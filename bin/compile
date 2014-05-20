@@ -140,19 +140,6 @@ set +e
 PYTHON_VERSION=$(cat runtime.txt)
 
 # Install Python.
-if [ -f .heroku/python-version ]; then
-  if [ ! $(cat .heroku/python-version) = $PYTHON_VERSION ]; then
-    bpwatch start uninstall_python
-      puts-step "Found $(cat .heroku/python-version), removing."
-      rm -fr .heroku/python
-    bpwatch stop uninstall_python
-  else
-    SKIP_INSTALL=1
-  fi
-fi
-
-
-if [ ! "$SKIP_INSTALL" ]; then
   bpwatch start install_python
     puts-step "Preparing Python runtime ($PYTHON_VERSION) and OpenCV"
     cp -r $ROOT_DIR/vendor/.heroku/bin .heroku/bin
@@ -171,9 +158,6 @@ if [ ! "$SKIP_INSTALL" ]; then
   FRESH_PYTHON=true
 
   hash -r
-else
-  puts-step "Using Python runtime ($PYTHON_VERSION)"
-fi
 
 # If Pip isn't up to date:
 if [ "$FRESH_PYTHON" ] || [[ ! $(pip --version) == *$PIP_VERSION* ]]; then

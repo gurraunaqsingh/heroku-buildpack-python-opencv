@@ -260,3 +260,8 @@ bpwatch start anvil_appdir_commit
 
 bpwatch stop anvil_appdir_commit
 bpwatch stop compile
+
+echo "-----> exporting PATH and LD_LIBRARY_PATH"
+mkdir -p "$BUILD_DIR/.profile.d"
+echo "export LD_LIBRARY_PATH=\"\$HOME/.heroku/lib:\$LD_LIBRARY_PATH\"" > $BUILD_DIR/.profile.d/opencv.sh
+echo "export PKG_CONFIG_PATH=\"\$HOME/.heroku/lib/pkgconfig:\$PKG_CONFIG_PATH\"" >> $BUILD_DIR/.profile.d/opencv.sh

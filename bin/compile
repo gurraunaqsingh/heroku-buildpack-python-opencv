@@ -27,6 +27,7 @@ PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
 
 DEFAULT_PYTHON_VERSION="python-2.7.6"
 PYTHON_EXE="/app/.heroku/python/bin/python"
+OPENCV_VERSION="2.4.9"
 PIP_VERSION="1.5.4"
 SETUPTOOLS_VERSION="2.1"
 
@@ -102,16 +103,8 @@ if [ ! -f requirements.txt ]; then
   echo "-e ." > requirements.txt
 fi
 
-# Sticky runtimes.
-if [ -f $CACHE_DIR/.heroku/python-version ]; then
-  DEFAULT_PYTHON_VERSION=$(cat $CACHE_DIR/.heroku/python-version)
-fi
-
-# If no runtime given, assume default version.
-if [ ! -f runtime.txt ]; then
-  puts-step "No runtime.txt provided; assuming $DEFAULT_PYTHON_VERSION."
-  echo $DEFAULT_PYTHON_VERSION > runtime.txt
-fi
+# Always use default version
+echo $DEFAULT_PYTHON_VERSION > runtime.txt
 
 # ### The Cache
 mkdir -p $CACHE_DIR
@@ -140,6 +133,14 @@ set +e
 PYTHON_VERSION=$(cat runtime.txt)
 
 # Install Python.
+if [ -f .heroku/opencv-version ]; then
+  if [ ! $(cat .heroku/opencv-version) = $OPENCV_VERSION ]; then
+  else
+    SKIP_INSTALL=1
+  fi
+fi
+
+if [ ! "$SKIP_INSTALL" ]; then
   bpwatch start install_python
     puts-step "Preparing Python runtime ($PYTHON_VERSION) and OpenCV"
     cp -r $ROOT_DIR/vendor/.heroku/bin .heroku/bin
@@ -154,10 +155,13 @@ PYTHON_VERSION=$(cat runtime.txt)
   bpwatch stop install_python
 
   # Record for future reference.
-  echo $PYTHON_VERSION > .heroku/python-version
+  echo $OPENCV_VERSION > .heroku/opencv-version
   FRESH_PYTHON=true
 
   hash -r
+else
+  puts-step "Using Python runtime ($PYTHON_VERSION)"
+fi
 
 # If Pip isn't up to date:
 if [ "$FRESH_PYTHON" ] || [[ ! $(pip --version) == *$PIP_VERSION* ]]; then

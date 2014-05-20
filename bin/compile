@@ -154,14 +154,16 @@ fi
 
 if [ ! "$SKIP_INSTALL" ]; then
   bpwatch start install_python
-    puts-step "Preparing Python runtime ($PYTHON_VERSION)"
-    curl http://envy-versions.s3.amazonaws.com/$PYTHON_VERSION.tar.bz2 -s | tar jx &> /dev/null
+    puts-step "Preparing Python runtime ($PYTHON_VERSION) and OpenCV"
+    cp -r $ROOT_DIR/vendor/.heroku/bin .heroku/bin
+    cp -r $ROOT_DIR/vendor/.heroku/lib .heroku/lib
+    cp -r $ROOT_DIR/vendor/.heroku/include .heroku/include
+    cp -r $ROOT_DIR/vendor/.heroku/share .heroku/share
     if [[ $? != 0 ]] ; then
       puts-warn "Requested runtime ($PYTHON_VERSION) was not found."
       puts-warn "Aborting.  More info: https://devcenter.heroku.com/articles/python-support"
       exit 1
     fi
-    mv python .heroku/python
   bpwatch stop install_python
 
   # Record for future reference.
@@ -209,7 +211,7 @@ bpwatch stop pylibmc_install
 # Install Mercurial if it appears to be required.
 if (grep -Fiq "hg+" requirements.txt) then
   bpwatch start mercurial_install
-    /app/.heroku/python/bin/pip install  mercurial | cleanup | indent
+    /app/.heroku/bin/pip install mercurial | cleanup | indent
   bpwatch stop mercurial_install
 fi
 
@@ -220,7 +222,7 @@ puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 [ ! "$FRESH_PYTHON" ] && bpwatch start pip_install
 [ "$FRESH_PYTHON" ] && bpwatch start pip_install_first
 
-/app/.heroku/python/bin/pip install -r requirements.txt --exists-action=w --src=./.heroku/src --allow-all-external  | cleanup | indent
+/app/.heroku/bin/pip install -r requirements.txt --exists-action=w --src=./.heroku/src --allow-all-external | cleanup | indent
 
 [ ! "$FRESH_PYTHON" ] && bpwatch stop pip_install
 [ "$FRESH_PYTHON" ] && bpwatch stop pip_install_first
@@ -234,11 +236,11 @@ bpwatch stop collectstatic
 #
 
 # Set context environment variables.
-set-env PATH '$HOME/.heroku/python/bin:$PATH'
+set-env PATH '$HOME/.heroku/bin:$PATH'
 set-env PYTHONUNBUFFERED true
-set-env PYTHONHOME /app/.heroku/python
-set-default-env LIBRARY_PATH /app/.heroku/vendor/lib
-set-default-env LD_LIBRARY_PATH /app/.heroku/vendor/lib
+set-env PYTHONHOME /app/.heroku
+set-default-env LIBRARY_PATH /app/.heroku/lib
+set-default-env LD_LIBRARY_PATH /app/.heroku/lib
 set-default-env LANG en_US.UTF-8
 set-default-env PYTHONHASHSEED random
 set-default-env PYTHONPATH /app/

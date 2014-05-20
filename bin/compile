@@ -135,6 +135,7 @@ PYTHON_VERSION=$(cat runtime.txt)
 # Install Python.
 if [ -f .heroku/opencv-version ]; then
   if [ ! $(cat .heroku/opencv-version) = $OPENCV_VERSION ]; then
+    puts-step "Found $(cat .heroku/opencv-version), overriding."
   else
     SKIP_INSTALL=1
   fi

@@ -20,7 +20,7 @@ if (grep -iq -e "^\s*scikit-learn" requirements.txt) then
 
   ## check whether this has happened already
 
-  if [ -d "python/lib/python2.7/site-packages/scikit-learn*" ]; then
+  if [ -d "lib/python2.7/site-packages/scikit-learn*" ]; then
     puts-step "Using cached scikit-learn."
   else
     puts-step "Setting environment vars..."

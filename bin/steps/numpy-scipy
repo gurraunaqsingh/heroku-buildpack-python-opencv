@@ -42,14 +42,7 @@ if (grep -iq -e "numpy" -e "scipy" requirements.txt) then
   export LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas:$LIBRARY_PATH
   export LD_LIBRARY_PATH=$(pwd)/vendor/lib:$(pwd)/vendor/lib/atlas-base:$(pwd)/vendor/lib/atlas-base/atlas:$LD_LIBRARY_PATH
 
-  if [ -d "python/lib/python2.7/site-packages/numpy" ]; then
-    puts-step "Using cached numpy."
-  else
-    puts-step "Creating/downloading numpy bdist."
-    tar -xvf ${VENDORED_GIT_NAME}/${VENDORED_NUMPY}.tar.gz > /dev/null
-  fi
-  
-  if [ -d "python/lib/python2.7/site-packages/scipy" ]; then
+  if [ -d "lib/python2.7/site-packages/scipy" ]; then
     puts-step "Using cached scipy."
   else
     puts-step "Creating/downloading scipy bdist."
@@ -59,7 +52,8 @@ if (grep -iq -e "numpy" -e "scipy" requirements.txt) then
   # Move everything from venv directory to python directory
   if [ -d "venv" ]; then
     puts-step "Moving everything from venv directory to python directory..."
-    cp -a venv/* python/
+    mv venv/lib/python2.7/site-packages/scipy lib/python2.7/site-packages/
+    mv venv/lib/python2.7/site-packages/scipy-0.11.0-py2.7.egg-info lib/python2.7/site-packages/
     rm -r venv
   fi
 

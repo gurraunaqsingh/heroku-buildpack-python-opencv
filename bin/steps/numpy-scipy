@@ -31,11 +31,16 @@ if (grep -iq -e "numpy" -e "scipy" requirements.txt) then
 
   ## check whether this has happened already
   ## set BLAS/LAPACK/ATLAS
-  if [ -d "vendor/lib/atlas-base" ]; then
+  if ls lib | grep --quiet libatlas; then
     puts-step "Using cached binaries."
   else
     puts-step "Creating/downloading binaries."
     tar -xvf ${VENDORED_GIT_NAME}/${VENDORED_BINARIES}.tar.gz > /dev/null
+    mv vendor/lib/* lib/
+    mv lib/atlas-base/* lib/
+    mv lib/atlas/* lib/
+    rmdir lib/atlas-base
+    rmdir lib/atlas
   fi
   export BLAS=$(pwd)/vendor/lib/atlas-base/atlas/libblas.a
   export LAPACK=$(pwd)/vendor/lib/atlas-base/atlas/liblapack.a

@@ -33,7 +33,7 @@ set-env() {
 
 # Usage: $ prepend-env key value
 prepend-env() {
-  echo "export $1=$1:$2" >> $PROFILE_PATH
+  echo "export $1=\$$1:$2" >> $PROFILE_PATH
 }
 
 # Usage: $ set-default-env key value

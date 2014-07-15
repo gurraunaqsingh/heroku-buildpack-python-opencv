@@ -210,6 +210,9 @@ fi
 # Install dependencies with Pip.
 puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 
+# Pre-install numpy if necessary
+source $BIN_DIR/steps/numpy
+
 # Force scikit-learn to use a specific script
 source $BIN_DIR/steps/scikit-learn
 
